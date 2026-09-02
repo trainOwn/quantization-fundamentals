@@ -111,10 +111,6 @@ Because `round()` throws away information, `dequantize(quantize(r)) ≠ r` in ge
 
 Asymmetric quantization stretches the tensor's real min/max onto the integer dtype's full min/max, and tracks where real `0.0` lands:
 
-<p align="center">
-  <img src="assets/asymmetric_mapping.png" width="720" alt="Asymmetric mapping from float range to INT8 range">
-</p>
-
 > `rmin → qmin`, `rmax → qmax`, and real `0.0` lands on the **zero-point** `z` — not necessarily on integer `0`.
 
 ---
@@ -202,10 +198,6 @@ No zero-point bookkeeping, no offset subtraction at inference time — just mult
 
 ## ⚖️ Asymmetric vs Symmetric
 
-<p align="center">
-  <img src="assets/symmetric_vs_asymmetric.png" width="640" alt="Symmetric quantization wastes one INT8 code point">
-</p>
-
 | | Asymmetric | Symmetric |
 |---|:---:|:---:|
 | Zero-point `z` | Computed from data, usually ≠ 0 | Always `0` |
@@ -222,10 +214,6 @@ No zero-point bookkeeping, no offset subtraction at inference time — just mult
 
 `torch.round()` collapses a continuous range of inputs onto one integer. Once dequantized, the result looks like a staircase instead of a straight line:
 
-<p align="center">
-  <img src="assets/rounding_error.png" width="620" alt="Rounding creates a staircase pattern, the gap to the ideal line is the quantization error">
-</p>
-
 The amber gap between the dashed "ideal" line and the red "quantized" staircase **is** the quantization error for every individual value. Squaring and averaging that gap across the whole tensor gives you the MSE.
 
 ---
@@ -237,10 +225,6 @@ After every quantize → dequantize round trip, the script computes:
 ```python
 error = (dequantized - original).square().mean()   # MSE
 ```
-
-<p align="center">
-  <img src="assets/mse_comparison.png" width="560" alt="Bar chart comparing MSE across arbitrary, optimal asymmetric, and symmetric quantization">
-</p>
 
 | Strategy | Scale `s` | Zero-point `z` | MSE ↓ |
 |---|---:|---:|---:|
@@ -301,12 +285,7 @@ Here `z` is fixed at `0`, and only `scale = rmax / qmax` needs to be computed.
 ```
 quantization-fundamentals/
 ├── README.md
-├── quantization_fundamentals.py     # runnable, self-contained script
-└── assets/
-    ├── asymmetric_mapping.png
-    ├── symmetric_vs_asymmetric.png
-    ├── rounding_error.png
-    └── mse_comparison.png
+├── quant.py     # runnable, self-contained script
 ```
 
 ---
